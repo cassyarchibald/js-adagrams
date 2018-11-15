@@ -1,103 +1,3 @@
-// Pool of letters - Used to check count of letters later
-const allLetters = [
-  "A",
-  "A",
-  "A",
-  "A",
-  "A",
-  "A",
-  "A",
-  "A",
-  "A",
-  "B",
-  "B",
-  "C",
-  "C",
-  "D",
-  "D",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "E",
-  "F",
-  "F",
-  "G",
-  "G",
-  "G",
-  "H",
-  "H",
-  "I",
-  "I",
-  "I",
-  "I",
-  "I",
-  "I",
-  "I",
-  "I",
-  "I",
-  "J",
-  "K",
-  "L",
-  "L",
-  "L",
-  "L",
-  "M",
-  "M",
-  "N",
-  "N",
-  "N",
-  "N",
-  "N",
-  "N",
-  "O",
-  "O",
-  "O",
-  "O",
-  "O",
-  "O",
-  "O",
-  "O",
-  "P",
-  "P",
-  "Q",
-  "R",
-  "R",
-  "R",
-  "R",
-  "R",
-  "R",
-  "S",
-  "S",
-  "S",
-  "S",
-  "T",
-  "T",
-  "T",
-  "T",
-  "T",
-  "T",
-  "U",
-  "U",
-  "U",
-  "U",
-  "V",
-  "V",
-  "W",
-  "W",
-  "X",
-  "Y",
-  "Y",
-  "Z"
-];
-
 // Helper Methods
 // Returns random sample of array
 const sample = function sample(array) {
@@ -170,47 +70,67 @@ const wordScores = function wordScores(words) {
   const wordScoreCollection = [];
 
   // Doing a more manual way
-  words.forEach(function(word){
-    wordScoreCollection.push(scoreWord(word));
+  words.forEach(function(word) {
+    wordScoreCollection.push(Adagrams.scoreWord(word));
   });
-  return wordScoreCollection; 
+  return wordScoreCollection;
 }; // End of wordScores
 
 // Go through array of hashes
 // Return the high score
-const highScore = function highScore(words){
+const highScore = function highScore(words) {
   let maxScore = 0;
-  words.forEach(function(word){
+  words.forEach(function(word) {
     if (word.score > maxScore) {
       maxScore = word.score;
     }
   });
   return maxScore;
 };
-const wordsWithHighScore = function wordsWithHighScore(words){
+// TODO High score is not defined?
+// Creates an array of words with the top score
+const wordsWithHighScore = function wordsWithHighScore(words, topScore) {
   const topScoredWords = [];
   // Push any words with the top score to the array
-  words.forEach(function(word){
-    if ( word.score === maxScore(words) ){
+  words.forEach(function(word) {
+    if (word.score === topScore) {
       topScoredWords.push(word);
     }
   });
+  return topScoredWords;
 };
-const tieChecker= function tieChecker(words){
-  if ( wordsWithHighScore(words).length > 1 ) {
+// Checks length of array of words with high score
+// If greater than one, return true
+const tieChecker = function tieChecker(words) {
+  if (words.length > 1) {
     return true;
   } else {
     return false;
   }
 };
-const lengthOfTen = function lengthOfTen(word){
+// Checks if any of the words have a length greater than 10
+// To be applied in the event of a tie
+const lengthOfTen = function lengthOfTen(words) {
   const wordsWithTenLength = [];
-  words.forEach(function(word){
+  words.forEach(function(word) {
     if (word.length === 10) {
-      wordsWithTenLength.push(word)
-    };
+      wordsWithTenLength.push(word);
+    }
   });
   return wordsWithTenLength;
+};
+const createWordHashes = function createWordHashes(words) {
+  // Take array of words and create array of hashes
+  // Where each word has word, score, num of letters
+  const wordCollection = [];
+  words.forEach(function(word) {
+    wordCollection.push({
+      word: word,
+      score: Adagrams.scoreWord(word),
+      letterCount: word.length
+    });
+  });
+  return wordCollection;
 };
 const Adagrams = {
   // Method to draw 10 random letters
@@ -376,19 +296,25 @@ const Adagrams = {
     // Return total points
     return totalPoints;
   },
-
-    // Find the top two scores (to check for ties)
-    // Iterate through hash tracking a max/comparing max against each value
+  // words is an array of strings
+  highestScoreFrom(words) {
+    // Creating array of word hashes with word, score, and length of word
+    const wordData = createWordHashes(words);
+    // Iterate through array of hashes tracking a max/comparing max against each value
+    const topScore = highScore(wordData);
     // Iterate through hash again shoveling words with max into a hash
+    const wordsWithTopScore = wordsWithHighScore(wordData, topScore);
+    // Check if there is a tie
+    if (tieChecker(wordsWithTopScore)) {
+      // Figure out how to break tie
+    } else {
+      // Return word hash with just the word/score
+    }
     // If hash has more than one value
     // If multiple words have the same length, return the first one
     // If one of the words is 10 letters, choose that one over the one with less tiles
     // If words are different lengths/none of them are 10, return the one with fewer letters
     // Maybe make a helper method to return the letter count? Could store as another key/value pair for that word...
-  },
-  highestScoreFrom(words) {
-    // Get word with highest score
-    // Return word hash with word and score
   }
 };
 

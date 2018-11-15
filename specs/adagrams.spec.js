@@ -148,4 +148,11 @@ describe("Adagrams", () => {
       });
     });
   });
+
+  describe("Helper Methods", () => {
+    // it("counts occurences of a letter", () => {
+    //   const words = "aaabbc".split("");
+    //   expect(Adagrams.occurenceCounter(words, "a")).toEqual(3);
+    // });
+  });
 });
