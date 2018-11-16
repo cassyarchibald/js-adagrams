@@ -136,18 +136,38 @@ const lengthOfTen = function lengthOfTen(words) {
   });
   return wordsWithTenLength;
 };
+const sameLength = function sameLength(words) {
+  const letterCount = words[0].letterCount;
+  // Starting result at true
+  // Will switch to false if any in if statement are false
+  let result = true;
+  // Might be able to use .every
+  // return words.every(letterCount === letterCount);
+  words.forEach(function(word) {
+    if (word.letterCount != letterCount) {
+      result = false;
+    }
+  });
+  return result;
+};
 // To be applied if there is a tie to break the tie
 const tieBreaker = function tieBreaker(words) {
   // To be used if tie checker is true
+  let winner = undefined;
   // Get array of any words that have 10 letters
   const tenLetterWords = lengthOfTen(words);
-  let winner = undefined;
   // If there is any ten letter words, return the first one
   // This account for if there's just one ten letter word (automatic win)
   // And if there's multiple ten letter words
   if (tenLetterWords.length > 0) {
     winner = tenLetterWords[0];
+  } else if (sameLength(words)) {
+    // Word lengths are the same, return the first one
+    winner = words[0];
   } else {
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // Check if their lengths are the same
+    // If so, return the first one
     // If not, return word with fewest letters
     words.forEach(function(word) {
       if (word.letterCount === wordWithLeastLetters(words)) {
