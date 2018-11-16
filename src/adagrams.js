@@ -55,7 +55,7 @@ const letterScore = function letterScore(letter) {
       return (score = 10);
   }
 };
-//////// TODO HELP TODO ////////
+//////// TODO Question TODO ////////
 //// How can I make an array of hashes (objects?) via map/the wordScore method from Adagrams?
 const wordScores = function wordScores(words) {
   // Map through words to create array of hashes
@@ -67,17 +67,17 @@ const wordScores = function wordScores(words) {
   //     letterCount: word.length
   //    };
   // }); // End of .map
-  const wordScoreCollection = [];
 
   // Doing a more manual way
+  const wordScoreCollection = [];
+
   words.forEach(function(word) {
     wordScoreCollection.push(Adagrams.scoreWord(word));
   });
   return wordScoreCollection;
 }; // End of wordScores
 
-// Go through array of hashes
-// Return the high score
+// Getting highest score
 const highScore = function highScore(words) {
   let maxScore = 0;
   words.forEach(function(word) {
@@ -87,7 +87,17 @@ const highScore = function highScore(words) {
   });
   return maxScore;
 };
-// Creates an array of words with the top score
+// Getting smallest count of letters in words
+// To be used if there's a tie/none of the letters are 10 length
+const wordWithLeastLetters = function wordWithLeastLetters(words) {
+  let minLetterCount = 0;
+  words.forEach(function(word) {
+    if (word.letterCount < minLetterCount) {
+      minLetterCount = word.letterCount;
+    }
+  });
+};
+// Creates an array of word objects with the top score
 const wordsWithHighScore = function wordsWithHighScore(words) {
   const topScoredWords = [];
   const maxScore = highScore(words);
@@ -99,8 +109,9 @@ const wordsWithHighScore = function wordsWithHighScore(words) {
   });
   return topScoredWords;
 };
-// Checks length of array of words with high score
-// If greater than one, return true
+
+// Checks length of array of word objects with high score
+// If greater than one, return true (will call tieBreaker helper)
 const tieChecker = function tieChecker(words) {
   if (words.length > 1) {
     return true;
@@ -113,9 +124,9 @@ const resultFormatter = function resultFormatter(word) {
   delete word["letterCount"];
   return word;
 };
-// Checks if any of the word objects in an array have a length greater than 10
 // To be applied in the event of a tie
 // Would be passed array of words with top score
+// Creates an array of the word objects have a length greater than 10
 const lengthOfTen = function lengthOfTen(words) {
   const wordsWithTenLength = [];
   words.forEach(function(word) {
@@ -123,23 +134,28 @@ const lengthOfTen = function lengthOfTen(words) {
       wordsWithTenLength.push(word);
     }
   });
-  // THIS COULD BE JOINED WITH ABOVE IF STATEMENT !!!!!!!!!!!!!!!!!!!!!!!
-  if (wordsWithTenLength.length > 1) {
-    //  You have more than one winning word that is 10 in length
-    // Return the first one
-    // Use delete thisIsObject["letterCount"] - TODO use helper method for cleanup
-
-    return resultFormatter(wordsWithTenLength[0]);
-  } else if (wordsWithTenLength.length === 1) {
-    // You have one word that is ten in length which should beat the other words
-    // Return that one
-    return resultFormatter(wordsWithTenLength[0]);
+  return wordsWithTenLength;
+};
+// To be applied if there is a tie to break the tie
+const tieBreaker = function tieBreaker(words) {
+  // To be used if tie checker is true
+  // Get array of any words that have 10 letters
+  const tenLetterWords = lengthOfTen(words);
+  let winner = undefined;
+  // If there is any ten letter words, return the first one
+  // This account for if there's just one ten letter word (automatic win)
+  // And if there's multiple ten letter words
+  if (tenLetterWords.length > 0) {
+    winner = tenLetterWords[0];
   } else {
-    // You have no words that are 10 in length
-    // Return false
-    // Cause function calling it to return word with least letters
-    return false;
+    // If not, return word with fewest letters
+    words.forEach(function(word) {
+      if (word.letterCount === wordWithLeastLetters(words)) {
+        winner = word;
+      }
+    });
   }
+  return winner;
 };
 const createWordHashes = function createWordHashes(words) {
   // Take array of words and create array of hashes
@@ -311,10 +327,8 @@ const Adagrams = {
         // console.log(`${letter}: points is now ${totalPoints}`);
       });
     }
-    // Apply bonus point method at end
-    // console.log("Applying bonus points");
+    // Check for bonus points
     totalPoints = bonusPoints(word, totalPoints);
-    // console.log(`Final Result: ${totalPoints}`);
     // Return  points
     return totalPoints;
   },
@@ -324,19 +338,16 @@ const Adagrams = {
     const wordData = createWordHashes(words);
     // Getting words with the top score
     const wordsWithTopScore = wordsWithHighScore(wordData);
+    let topWord = undefined;
     // Check if there is a tie
     if (tieChecker(wordsWithTopScore)) {
-      // Figure out how to break tie
-      // Are any words 10 length?
-      // If only one is 10 length = winner is that word
+      // If there's a tie, find the winner
+      topWord = tieBreaker(wordsWithHighScore);
     } else {
-      // Return word hash with just the word/score
+      // If there is no tie you just have one element in array
+      topWord = wordsWithTopScore[0];
     }
-    // If hash has more than one value
-    // If multiple words have the same length, return the first one
-    // If one of the words is 10 letters, choose that one over the one with less tiles
-    // If words are different lengths/none of them are 10, return the one with fewer letters
-    // Maybe make a helper method to return the letter count? Could store as another key/value pair for that word...
+    return resultFormatter(topWord);
   }
 };
 
