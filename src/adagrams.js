@@ -1,4 +1,4 @@
-// Helper Methods
+// Helper Methods TODO Convert to arrow functions TODO
 // Returns random sample of array
 const sample = function sample(array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -87,13 +87,13 @@ const highScore = function highScore(words) {
   });
   return maxScore;
 };
-// TODO High score is not defined?
 // Creates an array of words with the top score
-const wordsWithHighScore = function wordsWithHighScore(words, topScore) {
+const wordsWithHighScore = function wordsWithHighScore(words) {
   const topScoredWords = [];
+  const maxScore = highScore(words);
   // Push any words with the top score to the array
   words.forEach(function(word) {
-    if (word.score === topScore) {
+    if (word.score === maxScore) {
       topScoredWords.push(word);
     }
   });
@@ -108,16 +108,38 @@ const tieChecker = function tieChecker(words) {
     return false;
   }
 };
-// Checks if any of the words have a length greater than 10
+// Removes extra value letterCount from hash for final result
+const resultFormatter = function resultFormatter(word) {
+  delete word["letterCount"];
+  return word;
+};
+// Checks if any of the word objects in an array have a length greater than 10
 // To be applied in the event of a tie
+// Would be passed array of words with top score
 const lengthOfTen = function lengthOfTen(words) {
   const wordsWithTenLength = [];
   words.forEach(function(word) {
-    if (word.length === 10) {
+    if (word.letterCount === 10) {
       wordsWithTenLength.push(word);
     }
   });
-  return wordsWithTenLength;
+  // THIS COULD BE JOINED WITH ABOVE IF STATEMENT !!!!!!!!!!!!!!!!!!!!!!!
+  if (wordsWithTenLength.length > 1) {
+    //  You have more than one winning word that is 10 in length
+    // Return the first one
+    // Use delete thisIsObject["letterCount"] - TODO use helper method for cleanup
+
+    return resultFormatter(wordsWithTenLength[0]);
+  } else if (wordsWithTenLength.length === 1) {
+    // You have one word that is ten in length which should beat the other words
+    // Return that one
+    return resultFormatter(wordsWithTenLength[0]);
+  } else {
+    // You have no words that are 10 in length
+    // Return false
+    // Cause function calling it to return word with least letters
+    return false;
+  }
 };
 const createWordHashes = function createWordHashes(words) {
   // Take array of words and create array of hashes
@@ -293,20 +315,20 @@ const Adagrams = {
     // console.log("Applying bonus points");
     totalPoints = bonusPoints(word, totalPoints);
     // console.log(`Final Result: ${totalPoints}`);
-    // Return total points
+    // Return  points
     return totalPoints;
   },
   // words is an array of strings
   highestScoreFrom(words) {
     // Creating array of word hashes with word, score, and length of word
     const wordData = createWordHashes(words);
-    // Iterate through array of hashes tracking a max/comparing max against each value
-    const topScore = highScore(wordData);
-    // Iterate through hash again shoveling words with max into a hash
-    const wordsWithTopScore = wordsWithHighScore(wordData, topScore);
+    // Getting words with the top score
+    const wordsWithTopScore = wordsWithHighScore(wordData);
     // Check if there is a tie
     if (tieChecker(wordsWithTopScore)) {
       // Figure out how to break tie
+      // Are any words 10 length?
+      // If only one is 10 length = winner is that word
     } else {
       // Return word hash with just the word/score
     }
