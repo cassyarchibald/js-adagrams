@@ -1,6 +1,6 @@
 // Helper Methods TODO Convert to arrow functions TODO
 // Returns random sample of array
-const sample = function sample(array) {
+const sample = array => {
   return array[Math.floor(Math.random() * array.length)];
 };
 // Returns count of item in array
@@ -10,11 +10,12 @@ const occurenceCounter = function(array, value) {
 // Adds 8 points to score if length of word is 7..10
 const bonusPoints = function bonusPoints(word, score) {
   const length = word.length;
-  if (length > 6 && length < 11) {
-    return (score += 8);
-  } else {
-    return score;
-  }
+  return length > 6 && length < 11 ? (score += 8) : score;
+  // if (length > 6 && length < 11) {
+  //   return (score += 8);
+  // } else {
+  //   return score;
+  // }
 };
 // Calculates point of a letter
 const letterScore = function letterScore(letter) {
@@ -87,15 +88,26 @@ const highScore = function highScore(words) {
   });
   return maxScore;
 };
+const minLetterCount = function minLetterCount(words) {
+  let letterCount = words[0].letterCount;
+  words.forEach(function(word) {
+    if (word.letterCount < letterCount) {
+      letterCount = word.letterCount;
+    }
+  });
+  return letterCount;
+};
 // Getting smallest count of letters in words
 // To be used if there's a tie/none of the letters are 10 length
 const wordWithLeastLetters = function wordWithLeastLetters(words) {
-  let minLetterCount = 0;
+  let leastLetters = minLetterCount(words);
+  let smallestWord = undefined;
   words.forEach(function(word) {
-    if (word.letterCount < minLetterCount) {
-      minLetterCount = word.letterCount;
+    if (word.letterCount === leastLetters) {
+      smallestWord = word;
     }
   });
+  return smallestWord;
 };
 // Creates an array of word objects with the top score
 const wordsWithHighScore = function wordsWithHighScore(words) {
@@ -107,6 +119,7 @@ const wordsWithHighScore = function wordsWithHighScore(words) {
       topScoredWords.push(word);
     }
   });
+  // console.log(topScoredWords);
   return topScoredWords;
 };
 
@@ -152,6 +165,8 @@ const sameLength = function sameLength(words) {
 };
 // To be applied if there is a tie to break the tie
 const tieBreaker = function tieBreaker(words) {
+  // console.log("TIE BREAKER");
+  // console.log(words);
   // To be used if tie checker is true
   let winner = undefined;
   // Get array of any words that have 10 letters
@@ -166,14 +181,8 @@ const tieBreaker = function tieBreaker(words) {
     winner = words[0];
   } else {
     // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-    // Check if their lengths are the same
-    // If so, return the first one
-    // If not, return word with fewest letters
-    words.forEach(function(word) {
-      if (word.letterCount === wordWithLeastLetters(words)) {
-        winner = word;
-      }
-    });
+    // If different letter counts, return word with fewest letters
+    winner = wordWithLeastLetters(words);
   }
   return winner;
 };
@@ -356,16 +365,18 @@ const Adagrams = {
   highestScoreFrom(words) {
     // Creating array of word hashes with word, score, and length of word
     const wordData = createWordHashes(words);
+    // console.log(words);
     // Getting words with the top score
-    const wordsWithTopScore = wordsWithHighScore(wordData);
+    const topScoringWords = wordsWithHighScore(wordData);
+    // console.log(wordData);
     let topWord = undefined;
     // Check if there is a tie
-    if (tieChecker(wordsWithTopScore)) {
+    if (tieChecker(topScoringWords)) {
       // If there's a tie, find the winner
-      topWord = tieBreaker(wordsWithHighScore);
+      topWord = tieBreaker(topScoringWords);
     } else {
       // If there is no tie you just have one element in array
-      topWord = wordsWithTopScore[0];
+      topWord = topScoringWords[0];
     }
     return resultFormatter(topWord);
   }
