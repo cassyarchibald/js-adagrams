@@ -11,11 +11,6 @@ const occurenceCounter = function(array, value) {
 const bonusPoints = function bonusPoints(word, score) {
   const length = word.length;
   return length > 6 && length < 11 ? (score += 8) : score;
-  // if (length > 6 && length < 11) {
-  //   return (score += 8);
-  // } else {
-  //   return score;
-  // }
 };
 // Calculates point of a letter
 const letterScore = function letterScore(letter) {
@@ -56,13 +51,14 @@ const letterScore = function letterScore(letter) {
       return (score = 10);
   }
 };
-//////// TODO Question TODO ////////
+//////// QUESTION  ////////
 //// How can I make an array of hashes (objects?) via map/the wordScore method from Adagrams?
+// My attempt is commented out below
 const wordScores = function wordScores(words) {
   // Map through words to create array of hashes
   // words.map(function(word){
   //   // Create a hash for the word
-  //   // TODO Not sure how to do this in JavaScript
+  //   // Not sure how to do this in JavaScript
   //   { word: word,
   //     score: Adagrams.wordScore(word),
   //     letterCount: word.length
@@ -76,24 +72,22 @@ const wordScores = function wordScores(words) {
     wordScoreCollection.push(Adagrams.scoreWord(word));
   });
   return wordScoreCollection;
-}; // End of wordScores
+};
 
 // Getting highest score
 const highScore = function highScore(words) {
   let maxScore = 0;
   words.forEach(function(word) {
-    if (word.score > maxScore) {
-      maxScore = word.score;
-    }
+    if (word.score > maxScore) maxScore = word.score;
   });
   return maxScore;
 };
+// Getting lowest letter count
+// To be used if there's a tie/no ten letter words
 const minLetterCount = function minLetterCount(words) {
   let letterCount = words[0].letterCount;
   words.forEach(function(word) {
-    if (word.letterCount < letterCount) {
-      letterCount = word.letterCount;
-    }
+    if (word.letterCount < letterCount) letterCount = word.letterCount;
   });
   return letterCount;
 };
@@ -103,9 +97,7 @@ const wordWithLeastLetters = function wordWithLeastLetters(words) {
   let leastLetters = minLetterCount(words);
   let smallestWord = undefined;
   words.forEach(function(word) {
-    if (word.letterCount === leastLetters) {
-      smallestWord = word;
-    }
+    if (word.letterCount === leastLetters) smallestWord = word;
   });
   return smallestWord;
 };
@@ -115,22 +107,15 @@ const wordsWithHighScore = function wordsWithHighScore(words) {
   const maxScore = highScore(words);
   // Push any words with the top score to the array
   words.forEach(function(word) {
-    if (word.score === maxScore) {
-      topScoredWords.push(word);
-    }
+    if (word.score === maxScore) topScoredWords.push(word);
   });
-  // console.log(topScoredWords);
   return topScoredWords;
 };
 
 // Checks length of array of word objects with high score
 // If greater than one, return true (will call tieBreaker helper)
 const tieChecker = function tieChecker(words) {
-  if (words.length > 1) {
-    return true;
-  } else {
-    return false;
-  }
+  return words.length > 1;
 };
 // Removes extra value letterCount from hash for final result
 const resultFormatter = function resultFormatter(word) {
@@ -143,12 +128,12 @@ const resultFormatter = function resultFormatter(word) {
 const lengthOfTen = function lengthOfTen(words) {
   const wordsWithTenLength = [];
   words.forEach(function(word) {
-    if (word.letterCount === 10) {
-      wordsWithTenLength.push(word);
-    }
+    if (word.letterCount === 10) wordsWithTenLength.push(word);
   });
   return wordsWithTenLength;
 };
+// Checks if words are the same length
+// To be used if there is a tie
 const sameLength = function sameLength(words) {
   const letterCount = words[0].letterCount;
   // Starting result at true
@@ -157,16 +142,12 @@ const sameLength = function sameLength(words) {
   // Might be able to use .every
   // return words.every(letterCount === letterCount);
   words.forEach(function(word) {
-    if (word.letterCount != letterCount) {
-      result = false;
-    }
+    if (word.letterCount != letterCount) result = false;
   });
   return result;
 };
 // To be applied if there is a tie to break the tie
 const tieBreaker = function tieBreaker(words) {
-  // console.log("TIE BREAKER");
-  // console.log(words);
   // To be used if tie checker is true
   let winner = undefined;
   // Get array of any words that have 10 letters
@@ -180,8 +161,6 @@ const tieBreaker = function tieBreaker(words) {
     // Word lengths are the same, return the first one
     winner = words[0];
   } else {
-    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-    // If different letter counts, return word with fewest letters
     winner = wordWithLeastLetters(words);
   }
   return winner;
@@ -353,7 +332,6 @@ const Adagrams = {
       word.split("").forEach(function(letter) {
         // Add to totalPoints
         totalPoints += letterScore(letter);
-        // console.log(`${letter}: points is now ${totalPoints}`);
       });
     }
     // Check for bonus points
@@ -365,10 +343,8 @@ const Adagrams = {
   highestScoreFrom(words) {
     // Creating array of word hashes with word, score, and length of word
     const wordData = createWordHashes(words);
-    // console.log(words);
     // Getting words with the top score
     const topScoringWords = wordsWithHighScore(wordData);
-    // console.log(wordData);
     let topWord = undefined;
     // Check if there is a tie
     if (tieChecker(topScoringWords)) {
